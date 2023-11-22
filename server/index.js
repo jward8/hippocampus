@@ -3,15 +3,7 @@ const routes = require('./routes');
 const bodyParser = require('body-parser');
 
 const admin = require('firebase-admin');
-const serviceAccount = require('../credentials.json');
-
-admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount)
-});
-
-const db = admin.firestore();
-
-console.log(response);
+const db = require('./firebase');
 
 const app = express();
 // app.use(cors())
@@ -30,5 +22,3 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });
-
-module.exports = { db };

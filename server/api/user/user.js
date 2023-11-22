@@ -1,41 +1,44 @@
-const auth = require('firebase/auth');
-const { db } = require('../../index');
+const admin = require('firebase-admin')
 
-exports.createUserWithFirebase = async function(email, password, username, name) {
-    const authorization = auth.getAuth();
-    console.log("what?");
-    auth.createUserWithEmailAndPassword(authorization, email, password)
-        .then((response) => {
-            //We created the user
-            let user = response.user;
-            insertUserRecord(user.uid, name, username, email);
+exports.createUserWithFirebase = async function(email, password, username, firstName, lastName) {
+    try {
+        const authorization = admin.auth();
+        const userRecord = await authorization.createUser({
+            email: email,
+            password: password
         })
-        .catch((err) => {
-            throw err;
-        });
+        console.log('Successfully created user:', userRecord.toJSON());
+        await createUserRecord(userRecord, username, firstName, lastName);
+        return userRecord;
+    } catch (err) {
+        console.log('Error creating user:', err.message);
+        throw err;
+    }
 }
 
-exports.signInWithFirebase = async function(email, password) {
-    const authorization = auth.getAuth();
-    auth.signInWithEmailAndPassword(authorization, email, password)
-        .then((response) => {
-            // User signed in
-        })
-        .catch((err) => {
-            throw err;
-        })
-}
+async function createUserRecord(userRecord, username, firstName, lastName) {
+    // Create user document in Firestore
+    try {
+        const usersCollection = admin.firestore().collection('users');
+        const userDoc = {
+            uid: userRecord.uid,
+            email: userRecord.email,
+            username: username,
+            firstName: firstName,
+            lastName: lastName,
+            joined: Date.now()
+            // Add other user-related fields as needed
+        };
+        await usersCollection.add(userDoc);
 
-async function insertUserRecord(id, name, username, email) {
+        console.log('User document created in Firestore:', userRecord.uid);
 
-    const userJson = {
-        name: name,
-        username: username,
-        email: email,
-        joined: Date.now()
+        return userRecord;
+    } catch (err) {
+        console.error('Error creating user:', err.message);
+        throw err; // Re-throw the error to handle it elsewhere if needed
     }
 
-    const response = db.collection('users').doc(id).set(userJson);
 
-    console.log(response);
+
 }
