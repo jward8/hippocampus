@@ -1,9 +1,9 @@
 const credentials = require("../credentials.json");
-const admin = require('firebase-admin');
+const admin = require("firebase-admin");
 
 const adminApp = admin.initializeApp({
-    credential: admin.credential.cert(credentials)
-})
+  credential: admin.credential.cert(credentials),
+});
 
 const auth = admin.auth();
 

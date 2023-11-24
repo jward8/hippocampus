@@ -15,5 +15,8 @@
     "firebase": "^10.6.0",
     "firebase-admin": "^11.11.0",
     "nodemon": "^3.0.1"
+  },
+  "devDependencies": {
+    "prettier": "3.1.0"
   }
 }

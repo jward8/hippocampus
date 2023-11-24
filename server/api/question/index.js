@@ -1,1 +1,1 @@
-module.exports = require('./question.routes');
+module.exports = require("./question.routes");
