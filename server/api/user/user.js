@@ -1,4 +1,6 @@
 const admin = require("firebase-admin");
+const jwt = require("jsonwebtoken");
+const SECRET_KEY = process.env.SECRET_JWT_KEY;
 
 exports.createUserWithFirebase = async function (
   email,
@@ -26,6 +28,8 @@ async function createUserRecord(userRecord, username, firstName, lastName) {
   // Create user document in Firestore
   try {
     const usersCollection = admin.firestore().collection("users");
+    const userJWT = generateToken(userRecord.uid);
+
     const userDoc = {
       uid: userRecord.uid,
       email: userRecord.email,
@@ -33,6 +37,7 @@ async function createUserRecord(userRecord, username, firstName, lastName) {
       firstName: firstName,
       lastName: lastName,
       joined: Date.now(),
+      jwt: userJWT
       // Add other user-related fields as needed
     };
     await usersCollection.add(userDoc);
@@ -44,4 +49,11 @@ async function createUserRecord(userRecord, username, firstName, lastName) {
     console.error("Error creating user:", err.message);
     throw err; // Re-throw the error to handle it elsewhere if needed
   }
+}
+
+function generateToken(userRecordId) {
+  const payload = { userRecordId };
+  const options = { };
+  console.log(process.env);
+  return jwt.sign(payload, SECRET_KEY, options);
 }
