@@ -14,6 +14,7 @@
  *
  */
 const admin = require("firebase-admin");
+const { isValidUser } = require("../../utils/verify");
 
 exports.createQuestion = async function (
   category,
@@ -25,25 +26,31 @@ exports.createQuestion = async function (
   answer,
 ) {
   try {
-    const questionsCollection = admin.firestore().collection("questions");
-    const questionDoc = {
-      category: category,
-      description: description,
-      isPrivate: isPrivate,
-      creatorId: creatorId,
-      createdDate: Date.now(),
-      isMultipleChoice: isMultipleChoice,
-      multipleChoices: multipleChoices,
-      answer: answer,
-    };
-    const docRef = await questionsCollection.add(questionDoc);
 
-    console.log("Question document created in Firestore:", description);
-    const snapshot = docRef.get();
+    if (await isValidUser(creatorId)) {
+        const questionsCollection = admin.firestore().collection("questions");
+        const questionDoc = {
+        category: category,
+        description: description,
+        isPrivate: isPrivate,
+        creatorId: creatorId,
+        createdDate: Date.now(),
+        isMultipleChoice: isMultipleChoice,
+        multipleChoices: multipleChoices,
+        answer: answer,
+        };
+        const docRef = await questionsCollection.add(questionDoc);
 
-    return snapshot;
+        console.log("Question document created in Firestore:", description);
+        const snapshot = docRef.get();
+
+        return snapshot;
+    }
   } catch (err) {
     console.error("Error creating question:", err.message);
     throw err; // Re-throw the error to handle it elsewhere if needed
   }
 };
+
+// GET All User's Questions
+// GET
