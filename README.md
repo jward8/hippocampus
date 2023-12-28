@@ -1,1 +1,1 @@
-# wits-backend
+# hippocampus
