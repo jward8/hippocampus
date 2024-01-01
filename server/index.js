@@ -8,12 +8,12 @@ const db = require("./firebase");
 
 if (process.env.NODE_ENV.trim() === 'development') {
     try {
-        dotenv.config({ path: '../something.dev.env'});
+        dotenv.config({ path: './config-dev.env'});
     } catch (e) {
         console.error(e)
     }
 } else if (process.env.NODE_ENV.trim() === 'production') {
-    dotenv.config({ path: '../config.prod.env' });
+    dotenv.config({ path: './config.prod.env' });
 } else {
     console.log(process.env.NODE_ENV);
     console.error('Invalid NODE_ENV. Use "development" or "production". ');

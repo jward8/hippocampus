@@ -1,4 +1,4 @@
 node_modules
 credentials.json
-config.dev.env
-config.prod.env
+config-dev.env
+config-prod.env

@@ -10,7 +10,7 @@ exports.addUser = async function (req, res) {
       firstName,
       lastName,
     ).then((result) => {
-      res.json("User Created!");
+      res.json(result);
     });
   } catch (e) {
     console.error(e.message);

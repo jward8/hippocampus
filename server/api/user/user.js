@@ -1,6 +1,5 @@
 const admin = require("firebase-admin");
 const jwt = require("jsonwebtoken");
-const SECRET_KEY = process.env.SECRET_JWT_KEY;
 
 exports.createUserWithFirebase = async function (
   email,
@@ -11,12 +10,12 @@ exports.createUserWithFirebase = async function (
 ) {
   try {
     const authorization = admin.auth();
-    const userRecord = await authorization.createUser({
+    const createdUser = await authorization.createUser({
       email: email,
       password: password,
     });
-    console.log("Successfully created user:", userRecord.toJSON());
-    await createUserRecord(userRecord, username, firstName, lastName);
+    console.log("Successfully created user:", createdUser.toJSON());
+    const userRecord = await createUserRecord(createdUser, username, firstName, lastName);
     return userRecord;
   } catch (err) {
     console.log("Error creating user:", err.message);
@@ -44,7 +43,7 @@ async function createUserRecord(userRecord, username, firstName, lastName) {
 
     console.log("User document created in Firestore:", userRecord.uid);
 
-    return userRecord;
+    return userDoc;
   } catch (err) {
     console.error("Error creating user:", err.message);
     throw err; // Re-throw the error to handle it elsewhere if needed
@@ -53,7 +52,10 @@ async function createUserRecord(userRecord, username, firstName, lastName) {
 
 function generateToken(userRecordId) {
   const payload = { userRecordId };
-  const options = { };
-  console.log(process.env);
-  return jwt.sign(payload, SECRET_KEY, options);
+  const options = {
+    expiresIn: "1d",
+    issuer: 'Hippocampus',
+    audience: 'http://localhost:3000'
+   };
+  return jwt.sign(payload, process.env.SECRET_JWT_KEY, options);
 }
