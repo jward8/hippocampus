@@ -52,5 +52,28 @@ exports.createQuestion = async function (
   }
 };
 
-// GET All User's Questions
-// GET
+exports.deleteQuestion = async function (questionId) {
+  try {
+    const questionsCollection = admin.firestore().collection("questions");
+    const questionDoc = questionsCollection.doc(questionId);
+    await questionDoc.delete();
+    console.log("Question document deleted in Firestore:", questionId);
+  } catch (err) {
+    console.error("Error deleting question:", err.message);
+    throw err; // Re-throw the error to handle it elsewhere if needed
+  }
+};
+
+exports.getQuestions = async function (size) {
+  try {
+    const questionsCollection = admin.firestore().collection("questions");
+    const snapshot = await questionsCollection.limit(parseInt(size, 10)).get();
+    console.log("Questions retrieved from Firestore");
+    console.log("Number of questions retrieved:", snapshot.size);
+    const questions = snapshot.docs.map((doc) => doc.data());
+    return questions;
+  } catch (err) {
+    console.error("Error getting questions:", err.message);
+    throw err; // Re-throw the error to handle it elsewhere if needed
+  }
+}
